@@ -7,22 +7,22 @@ import java.util.Scanner;
 
 public class HotelManagement {
 
-    // ===== LIMITES =====
-    static final int MAX_ROOMS = 200;
-    static final int MAX_GUESTS = 500;
-    static final int MAX_RESERVATIONS = 1000;
+    // Limites
+    static final int MAX_ROOMS = 200; // Número máximo de quartos
+    static final int MAX_GUESTS = 500; // Número máximo de hóspedes
+    static final int MAX_RESERVATIONS = 1000; //Número máximo de reservas
 
-    // ===== FICHEIROS =====
-    static final String ROOMS_CSV = "quartos.csv";
-    static final String GUESTS_CSV = "hospedes.csv";
-    static final String RESERVATIONS_CSV = "reservas.csv";
+    // Ficheiros CSV
+    static final String ROOMS_CSV = "quartos.csv"; // Ficheiro de memória local para os quartos
+    static final String GUESTS_CSV = "hospedes.csv"; // Ficheiro de memória local para os hóspedes
+    static final String RESERVATIONS_CSV = "reservas.csv"; //Ficheiro de memória local para as reservas
 
     static Scanner scanner = new Scanner(System.in);
 
-    // ===== STORAGE (arrays + contadores) =====
-    static Room[] rooms = new Room[MAX_ROOMS];
-    static int roomCount = 0;
-    static int nextRoomId = 1;
+    // Armazenamento e contadores
+    static Room[] rooms = new Room[MAX_ROOMS]; // Array de criação e armazenamento dos quartos
+    static int roomCount = 0; // Contador para número de quartos
+    static int nextRoomId = 1; // Incrementador de ID de quartos
 
     static Guest[] guests = new Guest[MAX_GUESTS];
     static int guestCount = 0;
@@ -34,48 +34,46 @@ public class HotelManagement {
 
     public static void main(String[] args) {
 
-        // carregar ficheiros ao arrancar
+        // Carrega ficheiros de memória local
         loadRooms();
         loadGuests();
         loadReservations();
 
         int option;
-        do {
-            System.out.println("\n===== HOTEL MANAGEMENT =====");
-            System.out.println("1 - Rooms");
-            System.out.println("2 - Guests");
-            System.out.println("3 - Reservations");
-            System.out.println("0 - Exit");
+        do { // Menu Principal
+            System.out.println("\n===== Gestão Hoteleira =====");
+            System.out.println("1 - Quartos");
+            System.out.println("2 - Hóspedes");
+            System.out.println("3 - Reservas");
+            System.out.println("0 - Sair");
 
-            option = readInt();
+            option = readInt(); // Função que lida com exceções de input
 
             switch (option) {
                 case 1 -> roomMenu();
                 case 2 -> guestMenu();
                 case 3 -> reservationMenu();
-                case 0 -> System.out.println("Goodbye!");
-                default -> System.out.println("Invalid option.");
+                case 0 -> System.out.println("Adeus!");
+                default -> System.out.println("Opção Inválida.");
             }
 
         } while (option != 0);
     }
 
-    // =========================
-    // INPUT HELPERS
-    // =========================
-    static int readInt() {
+
+    static int readInt() { // Continua a pedir ao utilizador uma opção válida. Lida com exeções.
         while (true) {
-            try {
+            try { // vai ler a linha toda como uma string e se for opção válida converte e retorna a opção como int, caso contrário lança uma exeção que é "catched" e pede novo input ao utilizador.
                 String line = scanner.nextLine();
                 if (line.isBlank()) continue;
                 return Integer.parseInt(line.trim());
             } catch (NumberFormatException e) {
-                System.out.print("Invalid number. Try again: ");
+                System.out.print("Número inválido. Por favor tente novamente.: ");
             }
         }
     }
 
-    static String readLine() {
+    static String readLine() { // vai continuar a pedir input ao utilizador enquanto a linha estiver vazia ou só tiver espaços
         String s;
         do {
             s = scanner.nextLine().trim();
@@ -83,29 +81,27 @@ public class HotelManagement {
         return s;
     }
 
-    static LocalDate readDate(String msg) {
+    static LocalDate readDate(String msg) { // Garante que o formato da data introduzida é válida
         while (true) {
             System.out.print(msg);
             String raw = readLine();
             try {
                 return LocalDate.parse(raw);
             } catch (DateTimeParseException e) {
-                System.out.println("Invalid date. Use format YYYY-MM-DD.");
+                System.out.println("Data inválida. Use o formato - YYYY-MM-DD.");
             }
         }
     }
 
-    // =========================
-    // MENUS
-    // =========================
+
     static void roomMenu() {
         int op;
         do {
-            System.out.println("\n--- ROOM MENU ---");
-            System.out.println("1 - Add Room");
-            System.out.println("2 - List Rooms");
-            System.out.println("3 - Remove Room");
-            System.out.println("0 - Back");
+            System.out.println("\n--- Menu de Quartos ---");
+            System.out.println("1 - Adicionar quarto");
+            System.out.println("2 - Listar quarto");
+            System.out.println("3 - Remover quarto");
+            System.out.println("0 - Voltar atrás");
 
             op = readInt();
 
@@ -113,8 +109,9 @@ public class HotelManagement {
                 case 1 -> addRoom();
                 case 2 -> listRooms();
                 case 3 -> removeRoom();
-                case 0 -> { }
-                default -> System.out.println("Invalid option.");
+                case 0 -> {
+                }
+                default -> System.out.println("Opção inválida.");
             }
         } while (op != 0);
     }
@@ -122,11 +119,11 @@ public class HotelManagement {
     static void guestMenu() {
         int op;
         do {
-            System.out.println("\n--- GUEST MENU ---");
-            System.out.println("1 - Add Guest");
-            System.out.println("2 - List Guests");
-            System.out.println("3 - Remove Guest");
-            System.out.println("0 - Back");
+            System.out.println("\n--- Menu de Hóspedes ---");
+            System.out.println("1 - Adicionar hóspede");
+            System.out.println("2 - Listar hóspedes");
+            System.out.println("3 - Remover hóspede");
+            System.out.println("0 - Voltar atrás");
 
             op = readInt();
 
@@ -134,8 +131,9 @@ public class HotelManagement {
                 case 1 -> addGuest();
                 case 2 -> listGuests();
                 case 3 -> removeGuest();
-                case 0 -> { }
-                default -> System.out.println("Invalid option.");
+                case 0 -> {
+                }
+                default -> System.out.println("Opção inválida.");
             }
         } while (op != 0);
     }
@@ -143,13 +141,13 @@ public class HotelManagement {
     static void reservationMenu() {
         int op;
         do {
-            System.out.println("\n--- RESERVATION MENU ---");
-            System.out.println("1 - Create Reservation");
-            System.out.println("2 - List All Reservations");
-            System.out.println("3 - List Reservations By Room");
-            System.out.println("4 - List Reservations By Guest");
-            System.out.println("5 - Cancel Reservation");
-            System.out.println("0 - Back");
+            System.out.println("\n--- Menu de Reservas ---");
+            System.out.println("1 - Criar Reserva");
+            System.out.println("2 - Listar todas as Reservas");
+            System.out.println("3 - Listar Reservas por quarto");
+            System.out.println("4 - Listar Reservas por hóspede");
+            System.out.println("5 - Cancelar Reserva");
+            System.out.println("0 - Voltar atrás");
 
             op = readInt();
 
@@ -159,81 +157,85 @@ public class HotelManagement {
                 case 3 -> listReservationsByRoom();
                 case 4 -> listReservationsByGuest();
                 case 5 -> cancelReservation();
-                case 0 -> { }
-                default -> System.out.println("Invalid option.");
+                case 0 -> {
+                }
+                default -> System.out.println("Opção inválida.");
             }
         } while (op != 0);
     }
 
-    // =========================
-    // ROOMS
-    // =========================
-    static void addRoom() {
+    static void addRoom() { // Impede que o número máximo de quartos seja excedido
         if (roomCount >= MAX_ROOMS) {
-            System.out.println("Room limit reached.");
+            System.out.println("Limite que quarto alcançado.");
             return;
         }
 
         int id = nextRoomId++;
 
-        System.out.print("Room number: ");
+        System.out.print("Número do quarto: ");
         int number = readInt();
 
-        System.out.print("Capacity: ");
+        System.out.print("Capacidade: ");
         int capacity = readInt();
 
-        if (capacity < 1) {
-            System.out.println("Capacity must be >= 1.");
+        if (capacity < 1 || capacity >= 6) {
+            System.out.println("Deve introduzir uma capacidade entre 1 e 6.");
             return;
         }
 
         rooms[roomCount++] = new Room(id, number, capacity);
         saveRooms();
 
-        System.out.println("Room added with ID: " + id);
+        System.out.println("Quarto adicionado com ID: " + id);
     }
 
     static void listRooms() {
         if (roomCount == 0) {
-            System.out.println("No rooms.");
+            System.out.println("Não há quartos.");
             return;
         }
         for (int i = 0; i < roomCount; i++) {
-            System.out.println(rooms[i]);
+            System.out.println("ID do quarto: " + rooms[i].getId());
+            System.out.println("Número do quarto: " + rooms[i].getNumber());
+            System.out.println("Capacidade: " + rooms[i].getCapacity());
+
         }
     }
 
-    static void removeRoom() {
-        System.out.print("Room ID to remove: ");
+    static void removeRoom() { // Remove quarto através do ID
+        System.out.print("ID do quarto a remover: ");
         int id = readInt();
 
-        Room room = findRoomById(id);
+        Room room = findRoomById(id); // Confirma que o quarto existe
         if (room == null) {
-            System.out.println("Room not found.");
+            System.out.println("Quarto não encontrado.");
             return;
         }
 
-        // não remover se tiver reserva ativa
+        // Impede a eliminação do quarto caso esteja reservado
         for (int i = 0; i < reservationCount; i++) {
             Reservation r = reservations[i];
             if (r.isActive() && r.getRoomId() == id) {
-                System.out.println("Cannot remove: room has active reservations.");
+                System.out.println("O quarto não pode ser removido, pois tem reservas ativas!");
                 return;
             }
         }
 
         deleteRoomById(id);
         saveRooms();
-        System.out.println("Room removed.");
+        System.out.println("Quarto removido.");
     }
 
-    static Room findRoomById(int id) {
+    static Room findRoomById(int id) { // Procura e retorna quartos com id recebido. Se não encontrar retorna null
         for (int i = 0; i < roomCount; i++) {
             if (rooms[i].getId() == id) return rooms[i];
         }
         return null;
     }
 
+    // Como um array tem tamanho fixo não é possível eliminar posições.
+    // Desloca os elementos seguintes ao id que o utilizador pretende eliminar uma posição para trás.
+    // Diminui o contador de quartos válidos
     static void deleteRoomById(int id) {
         for (int i = 0; i < roomCount; i++) {
             if (rooms[i].getId() == id) {
@@ -245,41 +247,40 @@ public class HotelManagement {
         }
     }
 
-    // =========================
-    // GUESTS
-    // =========================
+
     static void addGuest() {
+        // Verifica se o número máximo de hóspedes é excedido.
         if (guestCount >= MAX_GUESTS) {
-            System.out.println("Guest limit reached.");
+            System.out.println("Número máximo de hóspedes atingido.");
             return;
         }
 
         int id = nextGuestId++;
 
-        System.out.print("Name: ");
+        System.out.print("Nome: ");
         String name = readLine();
 
         System.out.print("Email: ");
         String email = readLine();
 
-        System.out.print("Contact: ");
+        System.out.print("Contacto: ");
         int contact = readInt();
 
-        System.out.print("Document type: ");
+        System.out.print("Tipo de Documento: ");
         String type = readLine();
 
-        System.out.print("Document number: ");
+        System.out.print("Número do Documento: ");
         int docNumber = readInt();
 
         guests[guestCount++] = new Guest(id, name, email, contact, type, docNumber);
 
-        saveGuests();
-        System.out.println("Guest added with ID: " + id);
+        saveGuests(); // adiciona ao CSV
+        System.out.println("Hóspede adicionado com ID: " + id);
     }
 
     static void listGuests() {
         if (guestCount == 0) {
-            System.out.println("No guests.");
+            System.out.println("Não há hóspedes.");
             return;
         }
         for (int i = 0; i < guestCount; i++) {
@@ -288,12 +289,12 @@ public class HotelManagement {
     }
 
     static void removeGuest() {
-        System.out.print("Guest ID to remove: ");
+        System.out.print("Id do Hóspede a remover: ");
         int id = readInt();
 
         Guest g = findGuestById(id);
         if (g == null) {
-            System.out.println("Guest not found.");
+            System.out.println("Hóspede não encontrado.");
             return;
         }
 
@@ -603,7 +604,8 @@ public class HotelManagement {
                         guests[guestCount++] = new Guest(id, name, email, contact, docType, docNumber);
                         if (id >= nextGuestId) nextGuestId = id + 1;
                     }
-                } catch (Exception ignore) { }
+                } catch (Exception ignore) {
+                }
             }
         } catch (Exception e) {
             System.out.println("Error loading guests: " + e.getMessage());
