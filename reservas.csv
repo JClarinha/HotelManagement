@@ -1,2 +1,3 @@
 id,roomId,guestId,numberOfGuests,startDate,endDate,active
 1,1,1,2,2026-02-10,2026-02-12,true
+2,1,1,2,2026-02-07,2026-02-09,true

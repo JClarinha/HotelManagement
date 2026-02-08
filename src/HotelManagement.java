@@ -99,8 +99,10 @@ public class HotelManagement {
         do {
             System.out.println("\n--- Menu de Quartos ---");
             System.out.println("1 - Adicionar quarto");
-            System.out.println("2 - Listar quarto");
-            System.out.println("3 - Remover quarto");
+            System.out.println("2 - Listar todos os quartos");
+            System.out.println("3 - Listar quartos livres (hoje)");
+            System.out.println("4 - Listar quartos ocupados (hoje)");
+            System.out.println("5 - Remover quarto");
             System.out.println("0 - Voltar atrás");
 
             op = readInt();
@@ -108,13 +110,15 @@ public class HotelManagement {
             switch (op) {
                 case 1 -> addRoom();
                 case 2 -> listRooms();
-                case 3 -> removeRoom();
-                case 0 -> {
-                }
+                case 3 -> listAvailableRoomsToday();
+                case 4 -> listOccupiedRoomsToday();
+                case 5 -> removeRoom();
+                case 0 -> { }
                 default -> System.out.println("Opção inválida.");
             }
         } while (op != 0);
     }
+
 
     static void guestMenu() {
         int op;
@@ -178,7 +182,7 @@ public class HotelManagement {
         System.out.print("Capacidade: ");
         int capacity = readInt();
 
-        if (capacity < 1 || capacity >= 6) {
+        if (capacity < 1 || capacity > 6) {
             System.out.println("Deve introduzir uma capacidade entre 1 e 6.");
             return;
         }
@@ -247,6 +251,68 @@ public class HotelManagement {
         }
     }
 
+    static boolean isRoomOccupiedToday(int roomId) {
+        LocalDate today = LocalDate.now();
+
+        for (int i = 0; i < reservationCount; i++) {
+            Reservation r = reservations[i];
+            if (r == null) continue;
+
+            if (r.isActive() && r.getRoomId() == roomId) {
+                boolean todayInside = !today.isBefore(r.getStartDate()) && !today.isAfter(r.getEndDate());
+                if (todayInside) return true;
+            }
+        }
+        return false;
+    }
+
+    static void listAvailableRoomsToday() {
+        if (roomCount == 0) {
+            System.out.println("Não há quartos.");
+            return;
+        }
+
+        boolean found = false;
+
+        for (int i = 0; i < roomCount; i++) {
+            Room room = rooms[i];
+            if (!isRoomOccupiedToday(room.getId())) {
+                printRoom(room);
+                found = true;
+            }
+        }
+
+        if (!found) System.out.println("Não há quartos livres hoje.");
+    }
+
+    static void listOccupiedRoomsToday() {
+        if (roomCount == 0) {
+            System.out.println("Não há quartos.");
+            return;
+        }
+
+        boolean found = false;
+
+        for (int i = 0; i < roomCount; i++) {
+            Room room = rooms[i];
+            if (isRoomOccupiedToday(room.getId())) {
+                printRoom(room);
+                found = true;
+
+            }
+        }
+
+        if (!found) System.out.println("Não há quartos ocupados hoje.");
+    }
+
+    static void printRoom(Room room) {
+        System.out.println("ID do quarto: " + room.getId());
+        System.out.println("Número do quarto: " + room.getNumber());
+        System.out.println("Capacidade: " + room.getCapacity());
+        System.out.println("---------------------------");
+    }
+
+
 
     static void addGuest() {
         // Verifica se o número máximo de hóspedes é excedido.
@@ -298,20 +364,21 @@ public class HotelManagement {
             return;
         }
 
-        // não remover se tiver reserva ativa
+        // Caso o hóspede tenha reserva ativa, não o remove
         for (int i = 0; i < reservationCount; i++) {
             Reservation r = reservations[i];
             if (r.isActive() && r.getGuestId() == id) {
-                System.out.println("Cannot remove: guest has active reservations.");
+                System.out.println("Impossível remover, hóspede com reserva ativa.");
                 return;
             }
         }
 
         deleteGuestById(id);
         saveGuests();
-        System.out.println("Guest removed.");
+        System.out.println("Hóspede removido.");
     }
 
+    // Encontra o hóspede por id
     static Guest findGuestById(int id) {
         for (int i = 0; i < guestCount; i++) {
             if (guests[i].getId() == id) return guests[i];
@@ -319,6 +386,7 @@ public class HotelManagement {
         return null;
     }
 
+    // Remove o hóspede através do id
     static void deleteGuestById(int id) {
         for (int i = 0; i < guestCount; i++) {
             if (guests[i].getId() == id) {
